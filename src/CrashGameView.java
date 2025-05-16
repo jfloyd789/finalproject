@@ -32,7 +32,6 @@ public class CrashGameView extends JFrame {
         cashOutButton.setBackground(Color.ORANGE);
         add(cashOutButton);
 
-        // ✅ Fix: allow bets only during countdown with >1 second left
         betButton.addActionListener(e -> {
             try {
                 double bet = Double.parseDouble(betField.getText());
@@ -51,7 +50,6 @@ public class CrashGameView extends JFrame {
             }
         });
 
-        
         cashOutButton.addActionListener(e -> {
             boolean inRound = game.getPlayer().isInRound();
             boolean countdown = game.isInCountdown();

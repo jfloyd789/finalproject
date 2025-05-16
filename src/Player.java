@@ -34,7 +34,10 @@ public class Player {
         inRound = false;
     }
 
-    public double getBalance() { return balance; }
-    public boolean isInRound() { return inRound; }
-    public double getCurrentBet() { return currentBet; }
+    public double getBalance() { 
+        return balance; }
+    public boolean isInRound() {
+         return inRound; }
+    public double getCurrentBet() {
+         return currentBet; }
 }

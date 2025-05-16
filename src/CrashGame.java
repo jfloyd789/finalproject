@@ -19,7 +19,7 @@ public class CrashGame implements ActionListener {
     private long postCrashTimestamp = -1;
 
     public CrashGame() {
-        this.player = new Player(20.0);
+        this.player = new Player(5.0);
         this.multiplier = 1.00;
         this.crashPoint = generateCrashPoint();
         this.isCrashed = false;
@@ -33,7 +33,9 @@ public class CrashGame implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
         if (!isCrashed && !inCountdown) {
-            multiplier += 0.01;
+            double growthRate = 0.01 * Math.pow(multiplier, 0.5); // made it so the multiplier grows slower  at the beginning 
+            multiplier += growthRate;
+
             if (multiplier >= crashPoint) {
                 multiplier = crashPoint;
                 isCrashed = true;
@@ -50,7 +52,7 @@ public class CrashGame implements ActionListener {
             }
         } else if (inCountdown) {
             long elapsed = System.currentTimeMillis() - postCrashTimestamp - 5000;
-            countdownSeconds = 10 - (int)(elapsed / 1000);
+            countdownSeconds = 4 - (int)(elapsed / 1000);
             if (countdownSeconds <= 0) {
                 resetRound();
             }
@@ -64,31 +66,32 @@ public class CrashGame implements ActionListener {
     }
 
     private double generateCrashPoint() {
+        double instantCrashChance = 0.05;  // 5% chance to crash at 1.00x 
+        if (Math.random() < instantCrashChance) {
+            return 1.00;  // Instant bust
+        }
+    
+        double houseEdge = 0.35;  // 10% house edge
         double r = Math.random();
-        if (r == 0) r = 0.00001;
-        return Math.max(1.00, Math.floor((50.0 / (1.0 - r))) / 100.0);
+        if (r == 0.0) r = 0.000001;
+
+    
+        double rawMultiplier = (1 - houseEdge) / r;
+        crashPoint = Math.max(1.00, Math.floor(rawMultiplier * 100.0) / 100.0);
+        if (crashPoint > 30.0) {
+            crashPoint = 30.0;
+        }
+        return crashPoint;
     }
+    
+    
 
-
-
-
-    public double getMultiplier() { 
-        return multiplier; }
-
-    public boolean hasCrashed() { 
-        return isCrashed; }
-
-    public boolean isInCountdown() { 
-        return inCountdown; }
-
-    public int getCountdownSeconds() { 
-        return countdownSeconds; }
-
-    public Player getPlayer() {
-         return player; }
-
-    public List<Double> getLastMultipliers() { 
-        return lastMultipliers; }
+    public double getMultiplier() { return multiplier; }
+    public boolean hasCrashed() { return isCrashed; }
+    public boolean isInCountdown() { return inCountdown; }
+    public int getCountdownSeconds() { return countdownSeconds; }
+    public Player getPlayer() { return player; }
+    public List<Double> getLastMultipliers() { return lastMultipliers; }
 
     public void resetRound() {
         multiplier = 1.00;
@@ -97,12 +100,11 @@ public class CrashGame implements ActionListener {
         inCountdown = false;
         countdownSeconds = 0;
         postCrashTimestamp = -1;
-    
+
         if (!player.isInRound()) {
             player.resetBettingState();
         }
     }
-    
 
     public static void main(String[] args) {
         new CrashGame();
